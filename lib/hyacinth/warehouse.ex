@@ -162,6 +162,17 @@ defmodule Hyacinth.Warehouse do
   @doc """
   Lists all objects which belong to the given dataset.
   """
+  # lib/hyacinth/warehouse.ex에 추가
+  def list_sample_objects(%Dataset{} = dataset, sample_size) when is_integer(sample_size) and sample_size > 0 do
+    query = from o in Ecto.assoc(dataset, :objects),
+            select: o,
+            preload: :children
+
+    objects = Repo.all(query)
+    Enum.take_random(objects, min(sample_size, length(objects)))
+  end
+
+  # 기본 함수는 그대로 유지
   def list_objects(%Dataset{} = dataset) do
     Repo.all(
       from o in Ecto.assoc(dataset, :objects),

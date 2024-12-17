@@ -58,16 +58,33 @@ function drawRGBA(imageData, image, minThreshold, maxThreshold) {
         imageData.data[i] = value;
     }
 }
+// RGB 데이터를 그리기 위한 새로운 함수 추가
+function drawRGB(imageData, image, minThreshold, maxThreshold) {
+    for (let i = 0; i < image.numPixels; i++) {
+        const canvasIndex = i * 4;
+        const imageIndex = i * 3;  // RGB는 픽셀당 3채널
 
+        // RGB 각 채널에 대해 처리
+        for (let c = 0; c < 3; c++) {
+            const clamped = Math.max(Math.min(image.typedData[imageIndex + c], maxThreshold), minThreshold);
+            const value = ((clamped - minThreshold) / (maxThreshold - minThreshold)) * 255;
+            imageData.data[canvasIndex + c] = value;
+        }
+        imageData.data[canvasIndex + 3] = 255; // Alpha 채널은 완전 불투명으로
+    }
+}
 function render(canvas, image, minThreshold, maxThreshold) {
     const context = canvas.getContext('2d');
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
     switch (image.ctype) {
-        case 0:
+        case 0:  // Grayscale
             drawGrayscale(imageData, image, minThreshold, maxThreshold);
             break;
-        case 6:
+        case 2:  // RGB
+            drawRGB(imageData, image, minThreshold, maxThreshold);
+            break;
+        case 6:  // RGBA
             drawRGBA(imageData, image, minThreshold, maxThreshold);
             break;
         default:
@@ -125,6 +142,7 @@ function getRegionStats(canvas, image, rectPageCoords) {
 
     switch (image.ctype) {
         case 0: return getRegionStatsGrayscale(image, x1, x2, y1, y2);
+        case 2: // RGB는 RGBA와 동일한 방식으로 처리할 수 있습니다 (채널별 min/max)
         case 6: return getRegionStatsRGBA(image, x1, x2, y1, y2);
         default: throw new Error(`Unsupported png color type: ${image.ctype}`);
     }

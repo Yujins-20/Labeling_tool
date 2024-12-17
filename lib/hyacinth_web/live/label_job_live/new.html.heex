@@ -42,7 +42,6 @@
             </p>
 
             <br />
-
             <p>
               <%= label f, :prompt %>
               <%= text_input f, :prompt, placeholder: "How cool is this image?" %>
@@ -58,10 +57,17 @@
             <br />
 
             <p>
+              <%= label f, :sample_size, "Subset Size" %>
+              <%= number_input f, :sample_size, min: 2, placeholder: "Enter subset size" %>
+              <%= error_tag f, :sample_size %>
+            </p>
+
+            <p>
               <%= label f, :type %>
               <%= select f, :type, Enum.map(Ecto.Enum.values(LabelJob, :type), &({LabelJobType.name(&1), &1})) %>
               <%= error_tag f, :type %>
             </p>
+
 
           </div>
 

@@ -1,6 +1,5 @@
 defmodule Hyacinth.Labeling.LabelJobType do
   alias Hyacinth.Labeling.LabelJobType
-
   alias Hyacinth.Warehouse.Object
   alias Hyacinth.Labeling.{LabelJob, LabelSession, LabelElement}
 
@@ -250,9 +249,13 @@ defmodule Hyacinth.Labeling.LabelJobType do
 
   @type result_object :: {%Object{}, String.t}
 
-  @type t :: :classification | :comparison_exhaustive | :comparison_mergesort
+  @type t :: :classification | :comparison_exhaustive | :comparison_mergesort |
+             :comparison_quicksort | :comparison_heapsort | :comparison_timsort  # 새로운 타입 추가
 
   defp module_for(:classification), do: LabelJobType.Classification
   defp module_for(:comparison_exhaustive), do: LabelJobType.ComparisonExhaustive
   defp module_for(:comparison_mergesort), do: LabelJobType.ComparisonMergesort
+  defp module_for(:comparison_quicksort), do: LabelJobType.ComparisonQuicksort
+  defp module_for(:comparison_heapsort), do: LabelJobType.ComparisonHeapsort
+  defp module_for(:comparison_timsort), do: LabelJobType.ComparisonTimsort  # 새로운 모듈 매핑 추가
 end

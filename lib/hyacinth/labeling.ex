@@ -100,7 +100,7 @@ defmodule Hyacinth.Labeling do
 
       iex> get_label_job_with_blueprint(456)
       ** (Ecto.NoResultsError)
-      
+
   """
   @spec get_job_with_blueprint(term) :: %LabelJob{}
   def get_job_with_blueprint(id) do
@@ -125,6 +125,7 @@ defmodule Hyacinth.Labeling do
 
   """
   @spec create_label_job(map, %User{}) :: {:ok, %LabelJob{}} | {:error, %Ecto.Changeset{}}
+  # lib/hyacinth/labeling.ex
   def create_label_job(attrs \\ %{}, %User{} = created_by_user) do
     result =
       Multi.new()
@@ -134,7 +135,16 @@ defmodule Hyacinth.Labeling do
       end)
       |> Multi.run(:elements, fn _repo, %{label_job: %LabelJob{} = job, blueprint_session: %LabelSession{} = blueprint} ->
         dataset = Warehouse.get_dataset!(job.dataset_id)
-        objects_grouped = LabelJobType.group_objects(job.type, job.options, Warehouse.list_objects(dataset))
+
+        # sample_size가 있으면 list_sample_objects 사용, 없으면 list_objects 사용
+        objects = case job.sample_size do
+          size when is_integer(size) and size > 0 ->
+            Warehouse.list_sample_objects(dataset, size)
+          _ ->
+            Warehouse.list_objects(dataset)
+        end
+
+        objects_grouped = LabelJobType.group_objects(job.type, job.options, objects)
 
         elements =
           objects_grouped
@@ -155,8 +165,6 @@ defmodule Hyacinth.Labeling do
       end)
       |> Repo.transaction()
 
-    # Match result for label_job insert and return job or error changeset
-    # Errors for other steps in the multi are unexpected and thus raise
     case result do
       {:ok, %{label_job: %LabelJob{} = job}} ->
         {:ok, job}

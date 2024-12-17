@@ -22,6 +22,11 @@ defmodule HyacinthWeb.LabelJobLive.New do
 
   def handle_event("form_change", %{"label_job" => params}, socket) do
     params = Map.put(params, "options", socket.assigns.options_params)
+    params = case params["sample_size"] do
+      nil -> params
+      "" -> Map.put(params, "sample_size", nil)
+      size -> Map.put(params, "sample_size", String.to_integer(size))
+    end
     changeset =
       %LabelJob{}
       |> LabelJob.changeset(params)

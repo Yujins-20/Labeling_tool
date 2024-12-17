@@ -146,12 +146,18 @@ defmodule HyacinthWeb.Components.Cards do
       <:header><%= @job.name %></:header>
       <:tag>
         <%= case @job.type do %>
-        <% :classification -> %>
-          <div class="pill pill-green">Classification</div>
-        <% :comparison_exhaustive -> %>
-          <div class="pill pill-blue">Comparison</div>
-        <% :comparison_mergesort -> %>
-          <div class="pill pill-blue">Comparison</div>
+          <% :classification -> %>
+            <div class="pill pill-green">Classification</div>
+          <% :comparison_exhaustive -> %>
+            <div class="pill pill-blue">Comparison</div>
+          <% :comparison_mergesort -> %>
+            <div class="pill pill-blue">Comparison (Merge Sort)</div>
+          <% :comparison_quicksort -> %>
+            <div class="pill pill-blue">Comparison (Quick Sort)</div>
+          <% :comparison_heapsort -> %>
+            <div class="pill pill-blue">Comparison (Heap Sort)</div>
+          <% :comparison_timsort -> %>
+            <div class="pill pill-blue">Comparison (Active TimSort)</div>
         <% end %>
       </:tag>
 
